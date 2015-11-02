@@ -1,12 +1,16 @@
 class OpenGLMaestro {
 public:
-	OpenGLMaestro(char*, unsigned int);
-	void Init(int, char**);
+	OpenGLMaestro(char* windowTitle, unsigned int displayMode);
+	void Init(int argc, char** argv);
+	static void DisplayCallback();
 private:
-	double rotateY;
-	double rotateX;
 	char* windowTitle;
 	unsigned int displayMode;
-	void Display();
-	void Rotate(int, int, int);
+	void StartWindow();
+	void EnableCapability(unsigned int capability);
+	void SetCallbacks();
+	void GlutStart();
+	static void ClearScreen(unsigned int mask);
+	static void Prepare(unsigned int mode);
+	static void Flush();
 };

@@ -1,7 +1,7 @@
 #include "CMY.h"
 
-CMY::CMY(double cyan, double magenta, double yellow) {
-	c = cyan;
-	m = magenta;
-	y = yellow;
+CMY::CMY(double c, double m, double y) {
+	this->c = c;
+	this->m = m;
+	this->y = y;
 }

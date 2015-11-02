@@ -3,110 +3,103 @@
 #include <stdarg.h>
 #include <math.h>
 #include <GL/glut.h>
+#include "Rotator.h"
+#include "CubeBuilder.h"
 
 OpenGLMaestro::OpenGLMaestro(char* windowTitle, unsigned int displayMode) {
-	this->rotateX = 0;
-	this->rotateY = 0;
 	this->windowTitle = windowTitle;
 	this->displayMode = displayMode;
 }
 
-void OpenGLMaestro::Display(){
+void OpenGLMaestro::DisplayCallback(){
 
-	// Limpar a tela e o Z-buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	OpenGLMaestro::ClearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Lado multicolorido - FRENTE
-	glBegin(GL_POLYGON);
+	OpenGLMaestro::Prepare(GL_POLYGON);
 
-	// Os vértices serão adicionados na próxima etapa
-	glEnd();
+	Rotator::Rotate();
 
-	// Reinicializar transformações
-	glLoadIdentity();
+	CubeBuilder().BuildCube(0.5);
 
-	// Rotacionar quando o usuário mudar as variáveis rotate_x e rotate_y
-	glRotatef(this->rotateX, 1.0, 0.0, 0.0);
-	glRotatef(this->rotateY, 0.0, 1.0, 0.0);
-
-	//Lado multicolorido - Frente
-	glBegin(GL_POLYGON);
-	glColor3f(0.09, 0.28, 0.89);
-
-	glVertex3f(0.5, -0.5, -0.5);      // P1 é vermelho
-	glVertex3f(0.5, 0.5, -0.5);      // P2 é verde
-	glVertex3f(-0.5, 0.5, -0.5);      // P3 é azul
-	glVertex3f(-0.5, -0.5, -0.5);      // P4 é roxo
-
-	glEnd();
-
-	// Lado branco - TRASEIRA
-	glBegin(GL_POLYGON);
-	glColor3f(0.14, 0.8, 0.74);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glEnd();
-
-	// Lado roxo - DIREITA
-	glBegin(GL_POLYGON);
-	glColor3f(0.03, 0.8, 0.21);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, -0.5, 0.5);
-	glEnd();
-
-	// Lado verde - ESQUERDA
-	glBegin(GL_POLYGON);
-	glColor3f(0.84, 0.32, 0.10);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
-	glEnd();
-
-	// Lado azul - TOPO
-	glBegin(GL_POLYGON);
-	glColor3f(0.87, 0.14, 0.39);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glEnd();
-
-	// Lado vermelho - BASE
-	glBegin(GL_POLYGON);
-	glColor3f(0.87, 0.14, 0.39);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
-	glEnd();
-
-	glFlush();
-	glutSwapBuffers();
+	OpenGLMaestro::Flush();
 }
 
+/**
+	Initializes the example
+
+	@param argc passed parameters.
+	@param argv passed parameters
+*/
 void OpenGLMaestro::Init(int argc, char** argv){
-
-	// Inicializa o GLUT e processa os parâmetros do usuário
 	glutInit(&argc, argv);
+	this->StartWindow();
+	this->EnableCapability(GL_DEPTH_TEST);
+	this->SetCallbacks();
+	this->GlutStart();
+}
 
-	//  Requisita uma janela true color de buffer duplo com o Z-buffer
+/**
+	Creates the example window
+*/
+void OpenGLMaestro::StartWindow() {
 	glutInitDisplayMode(this->displayMode);
-
-	// Criar a janela
 	glutCreateWindow(this->windowTitle);
+}
 
-	// Habilite o teste de profundidade do Z-buffer
-	glEnable(GL_DEPTH_TEST);
+/**
+	Enable or disable server-side GL capabilities
 
-	// Funções callback
-	glutDisplayFunc(display);
-	glutSpecialFunc(specialKeys);
+	@param capability Specifies a symbolic constant 
+	indicating a GL capability.
+*/
+void OpenGLMaestro::EnableCapability(unsigned int capability) {
+	glEnable(capability);
+}
 
-	// Passando o controle para os eventos GLUT
+/**
+	Set the callback functions
+*/
+void OpenGLMaestro::SetCallbacks() {
+	glutDisplayFunc(&OpenGLMaestro::DisplayCallback);
+	glutSpecialFunc(&Rotator::CalculateKeyboardRotation);
+	glutMotionFunc(&Rotator::CalculateMouseRotation);
+}
+
+/**
+	Start the example
+*/
+void OpenGLMaestro::GlutStart() {
 	glutMainLoop();
+}
+
+/**
+	Clear buffers to preset values	
+
+	@param mask Bitwise OR of masks that 
+	indicate the buffers to be cleared.
+*/
+void OpenGLMaestro::ClearScreen(unsigned int mask) {
+	glClear(mask);
+}
+
+/**
+	Prepares the enviroment begin drawing
+
+	@param mask Specifies the primitive 
+	or primitives that will be created 
+	from vertices presented between glBegin 
+	and the subsequent glEnd.
+*/
+void OpenGLMaestro::Prepare(unsigned int mode) {
+	glBegin(mode);
+	glEnd();
+	glLoadIdentity();
+}
+
+/**
+	Flush the buffers on the current screen
+*/
+void OpenGLMaestro::Flush() {
+	glFlush();
+	glutSwapBuffers();
 }

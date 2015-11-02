@@ -71,12 +71,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CMY.cpp" />
+    <ClCompile Include="Coordinate.cpp" />
+    <ClCompile Include="CubeBuilder.cpp" />
+    <ClCompile Include="Drawer.cpp" />
     <ClCompile Include="HelloWorld.cpp" />
     <ClCompile Include="OpenGLMaestro.cpp" />
+    <ClCompile Include="Rotator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMY.h" />
+    <ClInclude Include="Coordinate.h" />
+    <ClInclude Include="CubeBuilder.h" />
+    <ClInclude Include="Drawer.h" />
     <ClInclude Include="OpenGLMaestro.h" />
+    <ClInclude Include="Rotator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
